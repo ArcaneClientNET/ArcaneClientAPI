@@ -22,7 +22,6 @@ public final class BukkitExample extends JavaPlugin implements Listener {
 		api = ArcaneClientAPI.builder()
 				.withAllowedVersions(ClientVersion.values()) // An array of client versions that are allowed to join
 				.withProperties(new ArcaneClientAPI.ClientProperty[] {
-						ArcaneClientAPI.ClientProperty.ARCANE_ONLY, // Make it so only players using the client can join
 						ArcaneClientAPI.ClientProperty.VOICE_CHAT // Tells the client that voice chat is supported on this server
 				}).build();
 		api.withAdapter(new BukkitAdapter(api, this)); // Set the adapter for the api to use
@@ -39,7 +38,7 @@ public final class BukkitExample extends JavaPlugin implements Listener {
 				return;
 			}
 			boolean onArcane = api.getAdapter().isOnArcane(player.getUniqueId());
-			if (!onArcane && api.hasProperty(ArcaneClientAPI.ClientProperty.ARCANE_ONLY)) {
+			if (!onArcane) {
 				player.kickPlayer("§cYou must be on Arcane Client to join this server.");
 				return;
 			}

@@ -83,6 +83,6 @@ public final class ArcaneClientAPI {
 	}
 	
 	public enum ClientProperty {
-		ARCANE_ONLY, VOICE_CHAT
+		VOICE_CHAT
 	}
 }
