@@ -1,0 +1,5 @@
+name: ArcaneClientAPI
+main: net.arcane.example.BukkitExample
+version: ${project.version}
+author: Braydon (Rainnny)
+api-version: 1.13
