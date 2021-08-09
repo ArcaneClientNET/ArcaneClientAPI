@@ -1,4 +1,4 @@
-package net.arcane.api.network.impl;
+package net.arcane.api.network.impl.client;
 
 import lombok.AllArgsConstructor;
 import net.arcane.api.network.ArcanePacket;

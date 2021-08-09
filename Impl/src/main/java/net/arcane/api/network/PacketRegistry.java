@@ -1,6 +1,6 @@
 package net.arcane.api.network;
 
-import net.arcane.api.network.impl.ACClientVoiceRulePacket;
+import net.arcane.api.network.impl.client.ACClientVoiceRulePacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ public final class PacketRegistry {
 	
 	static {
 		// Client
-		register(1, ACClientVoiceRulePacket.class);
+		register(0, ACClientVoiceRulePacket.class);
 	}
 	
 	/**

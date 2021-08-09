@@ -5,7 +5,7 @@ onto so it can support other server platforms like for instance the Velocity pro
 
 ## Features
 - Arcane Only **-** Enabling this makes it so only users on the client can join the server.
-- Version Selection **-** Select which versions of Minecraft users can use to connect to your server.
+- Version Selection **-** (TODO) Select which versions of Minecraft users can use to connect to your server.
 - Disable Mods **-** (TODO) This is extremely useful if you want to base your server around a specific
  gamemode and you want to prevent users from using specific mods in the client.
 

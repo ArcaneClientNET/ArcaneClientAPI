@@ -5,7 +5,7 @@ import net.arcane.api.adapter.ArcaneAdapter;
 import net.arcane.api.network.ArcanePacket;
 import net.arcane.api.network.PacketContainer;
 import net.arcane.api.network.PacketResult;
-import net.arcane.api.network.impl.ACClientVoiceRulePacket;
+import net.arcane.api.network.impl.client.ACClientVoiceRulePacket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
