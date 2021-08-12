@@ -14,6 +14,7 @@ public final class PacketContainer {
 	public PacketContainer(ArcanePacket packet) {
 		byteBuf = Unpooled.buffer();
 		writeInt(PacketRegistry.lookupId(packet.getClass()));
+		packet.write(this);
 	}
 	
 	/**
