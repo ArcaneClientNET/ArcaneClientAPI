@@ -6,6 +6,8 @@ import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.NonNull;
 
+import java.util.UUID;
+
 /**
  * @author Braydon
  */
@@ -17,6 +19,25 @@ public final class PacketContainer {
 		byteBuf = Unpooled.buffer();
 		writeInt(PacketRegistry.lookupId(packet.getClass()));
 		packet.write(this);
+	}
+	
+	/**
+	 * Write a UUID to the container.
+	 *
+	 * @param uuid the uuid
+	 */
+	public void writeUUID(UUID uuid) {
+		byteBuf.writeLong(uuid.getMostSignificantBits());
+		byteBuf.writeLong(uuid.getLeastSignificantBits());
+	}
+	
+	/**
+	 * Read a UUID from the container.
+	 *
+	 * @return the read uuid
+	 */
+	public UUID readUUID() {
+		return new UUID(byteBuf.readLong(), byteBuf.readLong());
 	}
 	
 	/**

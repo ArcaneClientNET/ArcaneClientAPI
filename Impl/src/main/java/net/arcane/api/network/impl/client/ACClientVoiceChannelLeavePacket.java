@@ -19,7 +19,7 @@ public final class ACClientVoiceChannelLeavePacket extends ArcanePacket {
 	
 	@Override
 	public void write(@NonNull PacketContainer container) {
-		container.writeString(user.getUuid().toString());
+		container.writeUUID(user.getUuid());
 		container.writeString(user.getName());
 		container.writeBoolean(user.isMuted());
 		container.writeBoolean(user.isDeafened());
