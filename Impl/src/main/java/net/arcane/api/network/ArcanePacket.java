@@ -1,6 +1,7 @@
 package net.arcane.api.network;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 /**
  * @author Braydon
@@ -12,12 +13,12 @@ public class ArcanePacket {
 	 *
 	 * @param container the packet container to write to
 	 */
-	public void write(PacketContainer container) {}
+	public void write(@NonNull PacketContainer container) {}
 	
 	/**
 	 * Read from the given packet container.
 	 *
 	 * @param container the packet container to read from
 	 */
-	public void read(PacketContainer container) {}
+	public void read(@NonNull PacketContainer container) {}
 }

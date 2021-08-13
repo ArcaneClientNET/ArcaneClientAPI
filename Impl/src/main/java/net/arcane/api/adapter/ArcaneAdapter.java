@@ -1,14 +1,15 @@
 package net.arcane.api.adapter;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.arcane.api.ArcaneClientAPI;
 import net.arcane.api.network.ArcanePacket;
 import net.arcane.api.network.PacketResult;
 import net.arcane.api.network.impl.client.ACClientVoiceChannelJoinPacket;
+import net.arcane.api.network.impl.client.ACClientVoiceChannelLeavePacket;
 import net.arcane.api.network.impl.client.ACClientVoiceRulePacket;
 import net.arcane.api.voice.VoiceChannel;
 import net.arcane.api.voice.VoiceUser;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +21,7 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 public abstract class ArcaneAdapter {
-	protected final ArcaneClientAPI api;
+	@NonNull protected final ArcaneClientAPI api;
 	
 	/**
 	 * The list of player UUIDs that are currently being verified.
@@ -46,7 +47,7 @@ public abstract class ArcaneAdapter {
 	 * @param uuid the uuid of the player to check
 	 * @return the verifying status
 	 */
-	public final boolean isVerifying(UUID uuid) {
+	public final boolean isVerifying(@NonNull UUID uuid) {
 		return usersVerifying.contains(uuid);
 	}
 	
@@ -56,7 +57,7 @@ public abstract class ArcaneAdapter {
 	 * @param uuid the uuid of the player to check
 	 * @return the client status
 	 */
-	public final boolean isOnArcane(UUID uuid) {
+	public final boolean isOnArcane(@NonNull UUID uuid) {
 		return clientUsers.contains(uuid);
 	}
 	
@@ -67,7 +68,7 @@ public abstract class ArcaneAdapter {
 	 * @see VoiceChannel for voice channel
 	 * @throws IllegalStateException if voice chat isn't enabled or if there is already a channel with the given name
 	 */
-	public final void createVoiceChannel(String name) {
+	public final void createVoiceChannel(@NonNull String name) {
 		if (!api.hasProperty(ArcaneClientAPI.ClientProperty.VOICE_CHAT)) {
 			throw new IllegalStateException("Voice chat is not enabled");
 		}
@@ -78,15 +79,18 @@ public abstract class ArcaneAdapter {
 	}
 	
 	/**
-	 * Set a player's voice channel.
+	 * Make the player with the given uuid and name join the given voice channel.
 	 *
 	 * @param uuid the uuid of the player
 	 * @param name the name of the player
 	 * @param voiceChannel the voice channel
 	 * @see VoiceChannel for voice channel
-	 * @throws IllegalStateException if voice chat isn't enabled or if the player is already in a voice channel
+	 * @throws IllegalStateException if the user is not on the client, voice chat isn't enabled, or if the user is already in a voice channel
 	 */
-	public final void setVoiceChannel(UUID uuid, String name, VoiceChannel voiceChannel) {
+	public final void joinVoiceChannel(@NonNull UUID uuid, @NonNull String name, @NonNull VoiceChannel voiceChannel) {
+		if (!isOnArcane(uuid)) {
+			throw new IllegalStateException("User is not on the client");
+		}
 		if (!api.hasProperty(ArcaneClientAPI.ClientProperty.VOICE_CHAT)) {
 			throw new IllegalStateException("Voice chat is not enabled");
 		}
@@ -100,6 +104,41 @@ public abstract class ArcaneAdapter {
 		// Send a channel join packet to all users in the channel to notify them that the above user has joined
 		for (VoiceUser channelUser : voiceChannel.getUsers()) {
 			sendPacket(channelUser.getUuid(), new ACClientVoiceChannelJoinPacket(user));
+		}
+	}
+	
+	/**
+	 * Make the player with the given uuid leave their current voice channel.
+	 *
+	 * @param uuid the uuid of the player
+	 * @see VoiceChannel for voice channel
+	 * @throws IllegalStateException if the user is not on the client, voice chat isn't enabled, or if the user is not in a voice channel
+	 */
+	public final void leaveVoiceChannel(@NonNull UUID uuid) {
+		if (!isOnArcane(uuid)) {
+			throw new IllegalStateException("User is not on the client");
+		}
+		if (!api.hasProperty(ArcaneClientAPI.ClientProperty.VOICE_CHAT)) {
+			throw new IllegalStateException("Voice chat is not enabled");
+		}
+		VoiceChannel voiceChannel = null;
+		for (VoiceChannel otherVoiceChannel : voiceChannels) {
+			if (otherVoiceChannel.hasUser(uuid)) {
+				voiceChannel = otherVoiceChannel;
+				break;
+			}
+		}
+		if (voiceChannel == null) {
+			throw new IllegalStateException("Player is not in a voice channel");
+		}
+		VoiceUser user = voiceChannel.getUser(uuid);
+		if (user == null) {
+			throw new NullPointerException();
+		}
+		voiceChannel.removeUser(user); // Remove the user from the voice channel
+		// Send a channel leave packet to all users in the channel to notify them that the above user has left
+		for (VoiceUser channelUser : voiceChannel.getUsers()) {
+			sendPacket(channelUser.getUuid(), new ACClientVoiceChannelLeavePacket(user));
 		}
 	}
 	
@@ -125,7 +164,7 @@ public abstract class ArcaneAdapter {
 	 * @see VoiceChannel for voice channel
 	 * @throws IllegalStateException if voice chat isn't enabled
 	 */
-	public final VoiceChannel getVoiceChannel(String name) {
+	public final VoiceChannel getVoiceChannel(@NonNull String name) {
 		if (!api.hasProperty(ArcaneClientAPI.ClientProperty.VOICE_CHAT)) {
 			throw new IllegalStateException("Voice chat is not enabled");
 		}
@@ -145,7 +184,7 @@ public abstract class ArcaneAdapter {
 	 * @return the result of the packet
 	 * @see ArcanePacket for the packet
 	 */
-	public abstract PacketResult sendPacket(UUID uuid, ArcanePacket packet);
+	public abstract PacketResult sendPacket(@NonNull UUID uuid, @NonNull ArcanePacket packet);
 	
 	/**
 	 * Handle a player joining with the client.
@@ -155,7 +194,7 @@ public abstract class ArcaneAdapter {
 	 *
 	 * @param uuid the uuid of the player that joined on Arcane Client
 	 */
-	protected final void handleClientJoin(UUID uuid) {
+	protected final void handleClientJoin(@NonNull UUID uuid) {
 		usersVerifying.remove(uuid);
 		clientUsers.add(uuid);
 		
@@ -166,13 +205,19 @@ public abstract class ArcaneAdapter {
 	}
 	
 	/**
-	 * Clean up the given player.
+	 * Clean up the user with the given uuid.
 	 *
-	 * @param player the player to clean up
+	 * @param uuid the uuid of the player to clean up
 	 */
-	public final void cleanup(Player player) {
-		usersVerifying.remove(player.getUniqueId());
-		clientUsers.remove(player.getUniqueId());
+	public final void cleanup(@NonNull UUID uuid) {
+		usersVerifying.remove(uuid);
+		clientUsers.remove(uuid);
+		for (VoiceChannel voiceChannel : voiceChannels) {
+			if (!voiceChannel.hasUser(uuid)) {
+				continue;
+			}
+			voiceChannel.removeUser(uuid);
+		}
 	}
 	
 	public static class Properties {

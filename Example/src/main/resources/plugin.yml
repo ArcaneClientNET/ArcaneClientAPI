@@ -3,3 +3,7 @@ main: net.arcane.example.BukkitExample
 version: ${project.version}
 author: Braydon (Rainnny)
 api-version: 1.13
+commands:
+  voicechat:
+    aliases: [vc]
+    description: "Join a voice chat channel"

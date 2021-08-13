@@ -1,5 +1,8 @@
 package net.arcane.api.network;
 
+import lombok.NonNull;
+import net.arcane.api.network.impl.client.ACClientVoiceChannelJoinPacket;
+import net.arcane.api.network.impl.client.ACClientVoiceChannelLeavePacket;
 import net.arcane.api.network.impl.client.ACClientVoiceRulePacket;
 
 import java.util.HashMap;
@@ -14,6 +17,8 @@ public final class PacketRegistry {
 	static {
 		// Client
 		register(0, ACClientVoiceRulePacket.class);
+		register(1, ACClientVoiceChannelJoinPacket.class);
+		register(2, ACClientVoiceChannelLeavePacket.class);
 	}
 	
 	/**
@@ -22,7 +27,7 @@ public final class PacketRegistry {
 	 * @param id the id of the packet to register
 	 * @param packetClass the class of the packet to register
 	 */
-	private static void register(int id, Class<? extends ArcanePacket> packetClass) {
+	private static void register(int id, @NonNull Class<? extends ArcanePacket> packetClass) {
 		REGISTRY.put(id, packetClass);
 	}
 	
@@ -32,7 +37,7 @@ public final class PacketRegistry {
 	 * @param packetClass the packet class to get the id for
 	 * @return the id of the given packet class, -1 if there is a problem
 	 */
-	public static int lookupId(Class<? extends ArcanePacket> packetClass) {
+	public static int lookupId(@NonNull Class<? extends ArcanePacket> packetClass) {
 		for (Map.Entry<Integer, Class<? extends ArcanePacket>> entry : REGISTRY.entrySet()) {
 			if (entry.getValue().equals(packetClass)) {
 				return entry.getKey();

@@ -1,8 +1,10 @@
 package net.arcane.api.network;
 
+import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * @author Braydon
@@ -11,10 +13,32 @@ import lombok.Getter;
 public final class PacketContainer {
 	private final ByteBuf byteBuf;
 	
-	public PacketContainer(ArcanePacket packet) {
+	public PacketContainer(@NonNull ArcanePacket packet) {
 		byteBuf = Unpooled.buffer();
 		writeInt(PacketRegistry.lookupId(packet.getClass()));
 		packet.write(this);
+	}
+	
+	/**
+	 * Write a String to the container.
+	 *
+	 * @param string the string
+	 */
+	public void writeString(@NonNull String string) {
+		byte[] bytes = string.getBytes(Charsets.UTF_8);
+		writeInt(bytes.length);
+		byteBuf.writeBytes(bytes);
+	}
+	
+	/**
+	 * Read a string from the container.
+	 *
+	 * @return the read string
+	 */
+	public @NonNull String readString() {
+		byte[] buffer = new byte[readInt()];
+		byteBuf.readBytes(buffer);
+		return new String(buffer, Charsets.UTF_8);
 	}
 	
 	/**

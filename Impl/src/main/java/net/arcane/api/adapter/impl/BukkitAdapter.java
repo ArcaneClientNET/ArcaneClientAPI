@@ -1,5 +1,6 @@
 package net.arcane.api.adapter.impl;
 
+import lombok.NonNull;
 import net.arcane.api.ArcaneClientAPI;
 import net.arcane.api.adapter.ArcaneAdapter;
 import net.arcane.api.network.ArcanePacket;
@@ -24,7 +25,7 @@ import java.util.UUID;
 public final class BukkitAdapter extends ArcaneAdapter implements Listener {
 	private final Plugin plugin;
 	
-	public BukkitAdapter(ArcaneClientAPI api, Plugin plugin) {
+	public BukkitAdapter(@NonNull ArcaneClientAPI api, @NonNull Plugin plugin) {
 		super(api);
 		this.plugin = plugin;
 		Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, Properties.CHANNEL);
@@ -42,7 +43,7 @@ public final class BukkitAdapter extends ArcaneAdapter implements Listener {
 	 * @return the result of the packet
 	 */
 	@Override
-	public PacketResult sendPacket(UUID uuid, ArcanePacket packet) {
+	public PacketResult sendPacket(@NonNull UUID uuid, @NonNull ArcanePacket packet) {
 		Player player = Bukkit.getPlayer(uuid);
 		if (player != null && isOnArcane(uuid)) {
 			player.sendPluginMessage(plugin, Properties.CHANNEL, new PacketContainer(packet).getByteBuf().array());
@@ -66,12 +67,12 @@ public final class BukkitAdapter extends ArcaneAdapter implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	private void onChannelUnregister(PlayerUnregisterChannelEvent event) {
 		if (event.getChannel().equals(Properties.CHANNEL)) {
-			cleanup(event.getPlayer());
+			cleanup(event.getPlayer().getUniqueId());
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	private void onQuit(PlayerQuitEvent event) {
-		cleanup(event.getPlayer());
+		cleanup(event.getPlayer().getUniqueId());
 	}
 }

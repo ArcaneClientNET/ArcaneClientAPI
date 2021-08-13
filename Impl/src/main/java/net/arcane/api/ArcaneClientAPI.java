@@ -1,9 +1,6 @@
 package net.arcane.api;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import net.arcane.api.adapter.ArcaneAdapter;
 import net.arcane.api.version.ClientVersion;
 
@@ -21,13 +18,13 @@ public final class ArcaneClientAPI {
 	 *
 	 * @param adapter the adapter
 	 */
-	public void withAdapter(ArcaneAdapter adapter) {
+	public void withAdapter(@NonNull ArcaneAdapter adapter) {
 		if (this.adapter != null)
 			throw new IllegalStateException("The adapter has already been set");
 		this.adapter = adapter;
 	}
 	
-	public boolean hasProperty(ClientProperty property) {
+	public boolean hasProperty(@NonNull ClientProperty property) {
 		for (ClientProperty clientProperty : properties) {
 			if (clientProperty == property) {
 				return true;
@@ -57,7 +54,7 @@ public final class ArcaneClientAPI {
 		 *
 		 * @param allowedVersions the array of versions that are allowed to join
 		 */
-		public APIBuilder withAllowedVersions(ClientVersion[] allowedVersions) {
+		public APIBuilder withAllowedVersions(@NonNull ClientVersion[] allowedVersions) {
 			this.allowedVersions = allowedVersions;
 			return this;
 		}
@@ -67,7 +64,7 @@ public final class ArcaneClientAPI {
 		 *
 		 * @param properties the properties to set
 		 */
-		public APIBuilder withProperties(ClientProperty[] properties) {
+		public APIBuilder withProperties(@NonNull ClientProperty[] properties) {
 			this.properties = properties;
 			return this;
 		}

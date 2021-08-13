@@ -3,6 +3,7 @@ package net.arcane.example;
 import net.arcane.api.ArcaneClientAPI;
 import net.arcane.api.adapter.impl.BukkitAdapter;
 import net.arcane.api.version.ClientVersion;
+import net.arcane.example.command.VoiceChatCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author Braydon
  */
 public final class BukkitExample extends JavaPlugin implements Listener {
+	public static final String VOICE_CHANNEL_NAME = "Test";
+	
 	private ArcaneClientAPI api;
 	
 	@Override
@@ -25,7 +28,9 @@ public final class BukkitExample extends JavaPlugin implements Listener {
 						ArcaneClientAPI.ClientProperty.VOICE_CHAT // Tells the client that voice chat is supported on this server
 				}).build();
 		api.withAdapter(new BukkitAdapter(api, this)); // Set the adapter for the api to use
+		api.getAdapter().createVoiceChannel(VOICE_CHANNEL_NAME);
 		Bukkit.getPluginManager().registerEvents(this, this);
+		getCommand("voicechat").setExecutor(new VoiceChatCommand(api));
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -39,10 +44,10 @@ public final class BukkitExample extends JavaPlugin implements Listener {
 			}
 			boolean onArcane = api.getAdapter().isOnArcane(player.getUniqueId());
 			if (!onArcane) {
-				player.kickPlayer("§cYou must be on Arcane Client to join this server.");
-				return;
+				player.sendMessage("§cYou are not on Arcane Client");
+			} else {
+				player.sendMessage("§aYou have connected with Arcane Client");
 			}
-			player.sendMessage("§aYou have connected with Arcane Client");
 		}, 15L); // We have to delay this to allow the client some time to send the registration messages over
 				   // the messaging channel. We could theoretically make this 10 ticks instead of 15 but doing so
 				   // will result in the player not seeing the message on the kick screen, therefore we have to delay
