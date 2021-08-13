@@ -28,7 +28,7 @@ public final class BukkitExample extends JavaPlugin implements Listener {
 						ArcaneClientAPI.ClientProperty.VOICE_CHAT // Tells the client that voice chat is supported on this server
 				}).build();
 		api.withAdapter(new BukkitAdapter(api, this)); // Set the adapter for the api to use
-		api.getAdapter().createVoiceChannel(VOICE_CHANNEL_NAME);
+		api.getAdapter().createVoiceChannel(VOICE_CHANNEL_NAME); // Creating a voice channel
 		Bukkit.getPluginManager().registerEvents(this, this);
 		getCommand("voicechat").setExecutor(new VoiceChatCommand(api));
 	}

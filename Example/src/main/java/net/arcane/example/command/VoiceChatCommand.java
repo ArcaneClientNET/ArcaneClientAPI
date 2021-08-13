@@ -25,15 +25,16 @@ public class VoiceChatCommand implements CommandExecutor {
 			return true;
 		}
 		VoiceChannel voiceChannel = api.getAdapter().getVoiceChannel(BukkitExample.VOICE_CHANNEL_NAME);
-		if (voiceChannel == null) {
+		if (voiceChannel == null) { // This should never happen as we create the channel when the plugin is loaded
 			sender.sendMessage("§cwell well well, something broke");
 			return true;
 		}
 		UUID uuid = ((Player) sender).getUniqueId();
-		if (voiceChannel.hasUser(uuid)) {
+		if (voiceChannel.hasUser(uuid)) { // If the player is in the voice channel, make them leave
 			api.getAdapter().leaveVoiceChannel(uuid);
 			sender.sendMessage("§cLeft voice channel §f" + voiceChannel.getName());
 		} else {
+			// Attempt to join the voice channel - If there is an error, the player will be notified
 			try {
 				api.getAdapter().joinVoiceChannel(((Player) sender).getUniqueId(), sender.getName(), voiceChannel);
 				sender.sendMessage("§aJoined voice channel §f" + voiceChannel.getName());
