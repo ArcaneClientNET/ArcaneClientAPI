@@ -103,7 +103,7 @@ public abstract class ArcaneAdapter {
 		voiceChannel.addUser(user); // Add the user to the voice channel
 		// Send a channel join packet to all users in the channel to notify them that the above user has joined
 		for (VoiceUser channelUser : voiceChannel.getUsers()) {
-			sendPacket(channelUser.getUuid(), new ACClientVoiceChannelJoinPacket(user));
+			sendPacket(channelUser.getUuid(), new ACClientVoiceChannelJoinPacket(voiceChannel, user));
 		}
 	}
 	
